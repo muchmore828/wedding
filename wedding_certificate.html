@@ -3,57 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>電子結婚書約 - 雙款式親友接續簽名</title>
+  <title>電子結婚書約 - 雙款式親友接續簽名牆</title>
+  
+  <!-- Google Fonts: Zen Maru Gothic & Kiwi Maru for aesthetic rounded handwritten style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- html2canvas for export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
     :root {
-      --primary-color: #d4a373;
-      --primary-dark: #bc8a5f;
-      --bg-color: #fefae0;
+      --primary-color: #c59b6c;
+      --primary-dark: #a0784a;
+      --bg-color: #fcf8f2;
       --card-bg: #ffffff;
       --text-color: #4a3f35;
       --accent-color: #e76f51;
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+      --shadow-lg: 0 12px 30px rgba(0,0,0,0.08);
+      --font-handwriting: 'Zen Maru Gothic', 'Kiwi Maru', 'PingFang TC', cursive, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      font-family: var(--font-handwriting);
       background-color: var(--bg-color);
       color: var(--text-color);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 10px;
+      padding: 24px 12px;
+      background-image: radial-gradient(#e2d5c3 1px, transparent 1px);
+      background-size: 24px 24px;
     }
 
     .header-title {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     .header-title h1 {
-      font-size: 1.8rem;
+      font-size: 2.1rem;
       color: var(--primary-dark);
       letter-spacing: 2px;
+      font-weight: 700;
+      text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
     }
 
     .header-title p {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: #8d7b68;
-      margin-top: 5px;
+      margin-top: 6px;
     }
 
     .app-container {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 24px;
       width: 100%;
-      max-width: 1100px;
+      max-width: 1200px;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 960px) {
       .app-container {
         flex-direction: row;
         align-items: flex-start;
@@ -64,23 +79,25 @@
     .certificate-wrapper {
       flex: 1;
       background: var(--card-bg);
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      padding: 15px;
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      padding: 16px;
       position: relative;
-      border: 1px solid #faedcd;
+      border: 1px solid #f0e6d6;
+      overflow: hidden;
     }
 
     .certificate-card {
       position: relative;
       width: 100%;
-      min-height: 500px;
-      background-size: contain;
+      min-height: 550px;
+      background-size: 100% 100%;
       background-position: center;
       background-repeat: no-repeat;
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
       margin: 0 auto;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.03);
     }
 
     /* Canvas 全圖覆蓋繪圖層 */
@@ -100,61 +117,85 @@
       display: block;
     }
 
-    /* 工具面板 (包含頁籤) */
+    /* 右側控制面板 */
     .tools-panel {
       width: 100%;
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
       position: relative;
       z-index: 100;
+      border: 1px solid #f0e6d6;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 960px) {
       .tools-panel {
-        width: 340px;
+        width: 360px;
       }
     }
 
     /* 右側頁籤切換按鈕區 */
     .tab-container {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       width: 100%;
     }
 
     .tab-btn {
       flex: 1;
-      padding: 10px 0;
-      font-size: 0.95rem;
-      font-weight: bold;
+      padding: 12px 0;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: var(--font-handwriting);
       border: 2px solid var(--primary-color);
       background: #fff;
       color: var(--primary-dark);
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.25s ease;
       text-align: center;
+      box-shadow: var(--shadow-sm);
     }
 
     .tab-btn.active {
       background: var(--primary-dark);
       color: #fff;
       border-color: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(160, 120, 74, 0.3);
+    }
+
+    .tool-section {
+      border-bottom: 1px dashed #eee3d3;
+      padding-bottom: 16px;
+    }
+
+    .tool-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
     }
 
     .tool-group-title {
       font-size: 0.95rem;
-      font-weight: bold;
+      font-weight: 700;
       color: var(--primary-dark);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+
+    .badge-protected {
+      font-size: 0.75rem;
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: normal;
     }
 
     .btn-row {
@@ -164,66 +205,139 @@
     }
 
     .btn {
-      padding: 8px 12px;
+      padding: 9px 14px;
       border: 1px solid var(--primary-color);
       background: #fff;
       color: var(--primary-dark);
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      font-family: var(--font-handwriting);
+      font-weight: 500;
       transition: all 0.2s;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .btn:hover { background: var(--primary-color); color: #fff; }
+    .btn:hover { background: #faf4ed; }
     .btn.active { background: var(--primary-dark); color: #fff; border-color: var(--primary-dark); }
     .btn-action { background: var(--primary-color); color: white; border: none; font-weight: bold; }
+    .btn-action:hover { background: var(--primary-dark); }
 
     .btn-export {
-      background: var(--accent-color);
+      background: linear-gradient(135deg, #e76f51, #f4a261);
       color: white;
       border: none;
-      font-size: 1rem;
-      padding: 12px;
+      font-size: 1.05rem;
+      padding: 14px;
       width: 100%;
-      border-radius: 8px;
-      font-weight: bold;
+      border-radius: 10px;
+      font-weight: 700;
+      font-family: var(--font-handwriting);
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(231, 111, 81, 0.3);
+      box-shadow: 0 6px 18px rgba(231, 111, 81, 0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .color-options { display: flex; gap: 8px; }
-    .color-dot {
-      width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
-      border: 2px solid #fff; box-shadow: 0 0 0 1px #ccc;
+    .btn-export:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(231, 111, 81, 0.45);
     }
-    .color-dot.active { transform: scale(1.15); box-shadow: 0 0 0 2px var(--primary-dark); }
+
+    /* 筆刷顏色選擇器 */
+    .color-options { display: flex; gap: 10px; align-items: center; }
+    .color-dot {
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+      border: 2px solid #fff; box-shadow: 0 0 0 1px #ddd;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .color-dot:hover { transform: scale(1.1); }
+    .color-dot.active { transform: scale(1.2); box-shadow: 0 0 0 2.5px var(--primary-dark); }
 
     .sticker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .sticker-btn {
-      font-size: 1.5rem; padding: 6px; background: #fefae0;
-      border: 1px solid #e9edc9; border-radius: 6px; cursor: pointer; text-align: center;
+      font-size: 1.5rem; padding: 8px; background: #fdfbf7;
+      border: 1px solid #ebdccb; border-radius: 8px; cursor: pointer; text-align: center;
+      transition: transform 0.15s, background-color 0.15s;
     }
+    .sticker-btn:hover { transform: scale(1.12); background-color: #f7ede2; }
 
     .text-input-group { display: flex; gap: 6px; }
-    .text-input-group input { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
-
-    .draggable-item {
-      position: absolute; cursor: move; user-select: none; padding: 4px 8px;
-      border-radius: 4px; display: flex; align-items: center; gap: 4px; font-size: 1.2rem; z-index: 50;
+    .text-input-group input {
+      flex: 1; padding: 10px 12px;
+      border: 1px solid #dcd1c4; border-radius: 8px;
+      font-size: 0.95rem; font-family: var(--font-handwriting);
+      outline: none;
+      transition: border-color 0.2s;
     }
-    .draggable-item:hover { border: 1px dashed #d4a373; background: rgba(255, 255, 255, 0.8); }
-    .draggable-item .delete-btn { display: none; color: red; font-weight: bold; cursor: pointer; margin-left: 4px; }
-    .draggable-item:hover .delete-btn { display: inline; }
+    .text-input-group input:focus { border-color: var(--primary-color); }
+
+    /* 可拖曳元素樣式 */
+    .draggable-item {
+      position: absolute;
+      cursor: move;
+      user-select: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1.3rem;
+      z-index: 50;
+      font-family: var(--font-handwriting);
+      transition: background-color 0.2s, border 0.2s;
+    }
+    .draggable-item:hover {
+      border: 1.5px dashed var(--primary-color);
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .draggable-item .delete-btn {
+      display: none;
+      color: #e76f51;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 6px;
+      font-size: 1rem;
+      background: #fff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      line-height: 18px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .draggable-item:hover .delete-btn { display: inline-block; }
+
+    /* 訊息提示框 */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(74, 63, 53, 0.92);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-family: var(--font-handwriting);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
 
   <div class="header-title">
-    <h1>電子結婚書約 - 線上簽名與祝福</h1>
-    <p>切換右側頁籤選擇款式，親友即可親筆簽名與留下祝福！</p>
+    <h1>✒️ 電子結婚書約 - 祝福與簽名牆</h1>
+    <p>親友可選擇書約款式，寫下優雅鋼筆筆跡與親筆祝福！</p>
   </div>
 
   <div class="app-container">
@@ -241,7 +355,7 @@
     <div class="tools-panel">
       
       <!-- 右側頁籤切換 -->
-      <div>
+      <div class="tool-section">
         <div class="tool-group-title">選擇結婚書約款式</div>
         <div class="tab-container">
           <button type="button" class="tab-btn active" id="tab1" onclick="switchTab(1)">📜 書約款式 A</button>
@@ -249,46 +363,62 @@
         </div>
       </div>
 
-      <!-- 畫筆模式 -->
-      <div>
+      <!-- 鋼筆筆刷設定 -->
+      <div class="tool-section">
         <div class="tool-group-title">
-          <span>畫筆工具</span>
-          <span id="currentToolText" style="font-size:0.8rem; color:#888;">【畫筆模式】</span>
+          <span>✒️ 鋼筆手寫筆刷</span>
+          <span style="font-size:0.8rem; color:#a0784a; font-weight:normal;">流暢速度感</span>
         </div>
-        <div class="btn-row">
-          <button type="button" class="btn active" id="penBtn" onclick="setMode('pen')">✏️ 畫筆</button>
-          <button type="button" class="btn" id="eraserBtn" onclick="setMode('eraser')">🧹 橡皮擦</button>
-        </div>
-      </div>
-
-      <!-- 步驟管理 -->
-      <div>
-        <div class="tool-group-title">步驟管理</div>
-        <div class="btn-row">
-          <button type="button" class="btn" onclick="undo()">↩️ 復原 (Undo)</button>
-          <button type="button" class="btn" onclick="clearCanvas()">🗑️ 清空此版筆劃</button>
-        </div>
-      </div>
-
-      <!-- 顏色與大小 -->
-      <div>
-        <div class="tool-group-title">筆刷設定</div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        
+        <!-- 顏色選擇器 -->
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 0.85rem; color: #8d7b68; margin-bottom: 6px;">墨水顏色</div>
           <div class="color-options">
-            <div class="color-dot active" style="background:#2b2b2b;" onclick="setColor('#2b2b2b', this)"></div>
-            <div class="color-dot" style="background:#e76f51;" onclick="setColor('#e76f51', this)"></div>
-            <div class="color-dot" style="background:#2a9d8f;" onclick="setColor('#2a9d8f', this)"></div>
-            <div class="color-dot" style="background:#457b9d;" onclick="setColor('#457b9d', this)"></div>
+            <div class="color-dot active" style="background:#2b2b2b;" title="經典墨黑" onclick="setColor('#2b2b2b', this)"></div>
+            <div class="color-dot" style="background:#1d3557;" title="優雅藍" onclick="setColor('#1d3557', this)"></div>
+            <div class="color-dot" style="background:#2a9d8f;" title="森林綠" onclick="setColor('#2a9d8f', this)"></div>
+            <div class="color-dot" style="background:#e76f51;" title="暖橘" onclick="setColor('#e76f51', this)"></div>
+            <div class="color-dot" style="background:#6a4c93;" title="夢幻紫" onclick="setColor('#6a4c93', this)"></div>
           </div>
-          <div>
-            <input type="range" id="brushSize" min="2" max="20" value="3" onchange="setBrushSize(this.value)">
+        </div>
+
+        <!-- 筆刷粗細 -->
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #8d7b68; margin-bottom: 4px;">
+            <span>筆頭粗細</span>
+            <span id="brushSizeVal">3 px</span>
           </div>
+          <input type="range" id="brushSize" min="1.5" max="8" step="0.5" value="3" style="width: 100%; accent-color: var(--primary-dark);" oninput="setBrushSize(this.value)">
+        </div>
+      </div>
+
+      <!-- 安全簽名保護與步驟管理 -->
+      <div class="tool-section">
+        <div class="tool-group-title">
+          <span>防誤刪簽名管理</span>
+          <span class="badge-protected">🔒 前人簽名保護中</span>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" onclick="undoMyStroke()">↩️ 復原我剛剛的筆劃</button>
+          <button type="button" class="btn" onclick="clearMySessionStrokes()">🗑️ 清除我本次簽劃</button>
+        </div>
+        <p style="font-size: 0.75rem; color: #8d7b68; margin-top: 6px; line-height: 1.3;">
+          ※ 防護機制：親友無法擦除或清空其他人先前的簽名與筆跡。
+        </p>
+      </div>
+
+      <!-- 手寫氣質圓潤文字祝福 -->
+      <div class="tool-section">
+        <div class="tool-group-title">手寫圓潤祝福文字</div>
+        <div class="text-input-group">
+          <input type="text" id="wishText" placeholder="輸入祝福（例：百年好合 永結同心）" onkeypress="if(event.key === 'Enter') addWishText()">
+          <button type="button" class="btn btn-action" onclick="addWishText()">放入</button>
         </div>
       </div>
 
       <!-- 可愛貼圖 -->
-      <div>
-        <div class="tool-group-title">點擊添加貼圖（可拖曳）</div>
+      <div class="tool-section">
+        <div class="tool-group-title">點擊添加祝福貼圖（可拖曳）</div>
         <div class="sticker-grid">
           <button type="button" class="sticker-btn" onclick="addSticker('❤️')">❤️</button>
           <button type="button" class="sticker-btn" onclick="addSticker('💍')">💍</button>
@@ -301,25 +431,24 @@
         </div>
       </div>
 
-      <!-- 祝福文字 -->
-      <div>
-        <div class="tool-group-title">輸入祝福文字</div>
-        <div class="text-input-group">
-          <input type="text" id="wishText" placeholder="寫下祝福（如：百年好合！）">
-          <button type="button" class="btn btn-action" onclick="addWishText()">放入</button>
-        </div>
-      </div>
-
       <!-- 下載圖片 -->
-      <div style="margin-top: 10px;">
-        <button type="button" class="btn-export" onclick="exportImage()">📷 下載當前結婚書約圖檔</button>
+      <div style="margin-top: 6px;">
+        <button type="button" class="btn-export" onclick="exportImage()">📷 匯出高畫質結婚書約</button>
       </div>
 
     </div>
 
   </div>
 
+  <div class="toast-msg" id="toast">提示訊息</div>
+
   <script>
+    // 預設書約背景圖網址
+    const defaultImages = {
+      1: "https://muchmore828.github.io/wedding/Style%20A-%20Family.png",
+      2: "https://muchmore828.github.io/wedding/Style%20B-%20Family.png"
+    };
+
     let currentTab = 1;
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
@@ -327,35 +456,42 @@
     const certCard = document.getElementById('certCard');
 
     let isDrawing = false;
-    let mode = 'pen';
     let strokeColor = '#2b2b2b';
-    let brushSize = 3;
+    let baseBrushSize = 3;
 
-    // 寫死預設圖片網址
-    const defaultImages = {
-      1: "https://muchmore828.github.io/wedding/Style%20A-%20Family.png",
-      2: "https://muchmore828.github.io/wedding/Style%20B-%20Family.png"
-    };
+    // 鋼筆流暢平滑演算資料
+    let currentStrokePoints = [];
+    let lastVelocity = 0;
+    let lastWidth = baseBrushSize;
 
-    // 儲存兩張頁籤各自的資料
+    // 歷史資料存儲機制
+    // permanentCanvasData: 累積之固定筆劃歷史（無法被擦除）
+    // sessionStrokes: 本次開啟連線所新增的筆畫陣列（僅允許復原或清空自己的）
     const store = {
-      1: { bg: defaultImages[1], canvasData: null, elements: [], aspect: null },
-      2: { bg: defaultImages[2], canvasData: null, elements: [], aspect: null }
+      1: { bg: defaultImages[1], permanentImage: null, sessionStrokes: [], elements: [], aspect: null },
+      2: { bg: defaultImages[2], permanentImage: null, sessionStrokes: [], elements: [], aspect: null }
     };
 
     function init() {
-      const savedData = localStorage.getItem('wedding_cert_store');
+      // 載入 LocalStorage 防刷新流失
+      const savedData = localStorage.getItem('wedding_cert_wall_v2');
       if (savedData) {
         try {
           const parsed = JSON.parse(savedData);
-          if (parsed[1]) store[1] = { ...parsed[1], bg: defaultImages[1] };
-          if (parsed[2]) store[2] = { ...parsed[2], bg: defaultImages[2] };
+          if (parsed[1]) {
+            store[1].permanentImage = parsed[1].permanentImage || null;
+            store[1].elements = parsed[1].elements || [];
+          }
+          if (parsed[2]) {
+            store[2].permanentImage = parsed[2].permanentImage || null;
+            store[2].elements = parsed[2].elements || [];
+          }
         } catch (e) {
           console.error(e);
         }
       }
 
-      // 預先加載圖片以獲取正確長寬比例
+      // 預先載入兩張圖片以計算原圖比例
       preloadImage(1);
       preloadImage(2);
 
@@ -363,8 +499,16 @@
       window.addEventListener('resize', handleResize);
     }
 
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
     function preloadImage(tabIndex) {
       const img = new Image();
+      img.crossOrigin = "anonymous";
       img.onload = function() {
         store[tabIndex].aspect = img.width / img.height;
         if (currentTab === tabIndex) {
@@ -372,11 +516,6 @@
         }
       };
       img.src = store[tabIndex].bg;
-    }
-
-    function saveToLocalStorage() {
-      store[currentTab].canvasData = canvas.toDataURL();
-      localStorage.setItem('wedding_cert_store', JSON.stringify(store));
     }
 
     function adjustCardAspectRatio(aspectRatio) {
@@ -391,15 +530,11 @@
 
     function resizeCanvas() {
       const rect = container.getBoundingClientRect();
-      const tempImgData = canvas.toDataURL();
+      if (canvas.width === rect.width && canvas.height === rect.height) return;
+      
       canvas.width = rect.width;
       canvas.height = rect.height;
-
-      if (tempImgData && tempImgData !== 'data:,') {
-        const img = new Image();
-        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        img.src = tempImgData;
-      }
+      redrawCurrentCanvas();
     }
 
     function handleResize() {
@@ -413,7 +548,8 @@
     function switchTab(tabIndex) {
       if (currentTab === tabIndex) return;
 
-      saveToLocalStorage();
+      // 切換前將 session 筆劃合併存儲
+      savePermanentState();
 
       currentTab = tabIndex;
       document.getElementById('tab1').classList.toggle('active', tabIndex === 1);
@@ -423,20 +559,15 @@
     }
 
     function loadTabData(tabIndex) {
+      // 清理可拖曳貼圖/文字 DOM
       document.querySelectorAll('.draggable-item').forEach(el => el.remove());
 
       certCard.style.backgroundImage = `url("${store[tabIndex].bg}")`;
       adjustCardAspectRatio(store[tabIndex].aspect);
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (store[tabIndex].canvasData) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-        img.src = store[tabIndex].canvasData;
-      }
+      redrawCurrentCanvas();
 
+      // 重建文字與貼圖
       if (store[tabIndex].elements) {
         store[tabIndex].elements.forEach(data => {
           createDraggableElement(data.html, data.left, data.top, false);
@@ -444,48 +575,150 @@
       }
     }
 
+    function redrawCurrentCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const tabData = store[currentTab];
+
+      // 1. 繪製永久歷史紀錄層
+      if (tabData.permanentImage) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          // 2. 繪製本次 Session 新增筆劃
+          renderSessionStrokes();
+        };
+        img.src = tabData.permanentImage;
+      } else {
+        renderSessionStrokes();
+      }
+    }
+
+    function renderSessionStrokes() {
+      const strokes = store[currentTab].sessionStrokes;
+      strokes.forEach(stroke => {
+        if (stroke.points.length < 2) return;
+        drawStrokeCalligraphy(stroke.points, stroke.color, stroke.baseSize);
+      });
+    }
+
+    /* ---------------- 鋼筆/書法質感筆刷核心演算法 ---------------- */
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      return { x: clientX - rect.left, y: clientY - rect.top };
+      return { 
+        x: clientX - rect.left, 
+        y: clientY - rect.top,
+        time: Date.now()
+      };
     }
 
     function startDrawing(e) {
       isDrawing = true;
       const pos = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
+      currentStrokePoints = [pos];
+      lastVelocity = 0;
+      lastWidth = baseBrushSize;
     }
 
     function draw(e) {
       if (!isDrawing) return;
       e.preventDefault();
       const pos = getPos(e);
+      
+      const prevPos = currentStrokePoints[currentStrokePoints.length - 1];
+      const dist = Math.hypot(pos.x - prevPos.x, pos.y - prevPos.y);
+      if (dist < 2) return; // 忽略微小抖動
 
-      ctx.lineWidth = mode === 'eraser' ? brushSize * 4 : brushSize;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+      const timeDiff = Math.max(1, pos.time - prevPos.time);
+      const velocity = dist / timeDiff;
 
-      if (mode === 'eraser') {
-        ctx.globalCompositeOperation = 'destination-out';
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = strokeColor;
-      }
+      currentStrokePoints.push(pos);
 
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
+      // 依據動態速度計算鋼筆線條寬度（速度快線條細，速度慢筆頭沉墨粗）
+      const targetWidth = Math.max(
+        baseBrushSize * 0.45, 
+        Math.min(baseBrushSize * 1.6, baseBrushSize * (1.2 - velocity * 0.12))
+      );
+
+      // 平滑筆寬漸變
+      const currentWidth = lastWidth * 0.6 + targetWidth * 0.4;
+
+      // 即時繪製當前微段落
+      drawSegmentCalligraphy(prevPos, pos, strokeColor, currentWidth);
+
+      lastWidth = currentWidth;
+      lastVelocity = velocity;
     }
 
     function stopDrawing() {
-      if (isDrawing) {
-        isDrawing = false;
-        ctx.closePath();
-        saveToLocalStorage();
+      if (!isDrawing) return;
+      isDrawing = false;
+
+      if (currentStrokePoints.length > 1) {
+        // 保存筆畫點陣列
+        store[currentTab].sessionStrokes.push({
+          points: [...currentStrokePoints],
+          color: strokeColor,
+          baseSize: baseBrushSize
+        });
+        savePermanentState();
       }
+      currentStrokePoints = [];
     }
 
+    // 繪製單段鋼筆曲線
+    function drawSegmentCalligraphy(p1, p2, color, width) {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+
+    // 完整繪製流暢鋼筆筆劃（用於重繪）
+    function drawStrokeCalligraphy(points, color, baseSize) {
+      if (points.length < 2) return;
+
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      let p1 = points[0];
+      let width = baseSize;
+
+      for (let i = 1; i < points.length; i++) {
+        let p2 = points[i];
+        let dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        let timeDiff = Math.max(1, (p2.time || 0) - (p1.time || 0));
+        let velocity = dist / timeDiff;
+
+        let targetWidth = Math.max(
+          baseSize * 0.45, 
+          Math.min(baseSize * 1.6, baseSize * (1.2 - velocity * 0.12))
+        );
+        width = width * 0.6 + targetWidth * 0.4;
+
+        ctx.beginPath();
+        ctx.lineWidth = width;
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+
+        p1 = p2;
+      }
+      ctx.restore();
+    }
+
+    // 綁定畫筆事件
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
@@ -495,29 +728,51 @@
     canvas.addEventListener('touchmove', draw);
     canvas.addEventListener('touchend', stopDrawing);
 
-    function undo() { clearCanvas(); }
-
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      saveToLocalStorage();
+    /* ---------------- 防護復原與清除機制 ---------------- */
+    function undoMyStroke() {
+      const strokes = store[currentTab].sessionStrokes;
+      if (strokes.length > 0) {
+        strokes.pop();
+        redrawCurrentCanvas();
+        savePermanentState();
+        showToast('已復原您剛剛的上一筆劃');
+      } else {
+        showToast('您本次連線尚無新增筆劃');
+      }
     }
 
-    function setMode(newMode) {
-      mode = newMode;
-      document.getElementById('penBtn').classList.toggle('active', mode === 'pen');
-      document.getElementById('eraserBtn').classList.toggle('active', mode === 'eraser');
-      document.getElementById('currentToolText').innerText = mode === 'pen' ? '【畫筆模式】' : '【橡皮擦模式】';
+    function clearMySessionStrokes() {
+      if (store[currentTab].sessionStrokes.length > 0) {
+        store[currentTab].sessionStrokes = [];
+        redrawCurrentCanvas();
+        savePermanentState();
+        showToast('已清除您本次連線的所有筆劃');
+      } else {
+        showToast('您本次連線尚無新增筆劃');
+      }
     }
 
+    function savePermanentState() {
+      store[currentTab].permanentImage = canvas.toDataURL();
+      localStorage.setItem('wedding_cert_wall_v2', JSON.stringify({
+        1: { permanentImage: store[1].permanentImage, elements: store[1].elements },
+        2: { permanentImage: store[2].permanentImage, elements: store[2].elements }
+      }));
+    }
+
+    /* ---------------- 工具與設定 ---------------- */
     function setColor(color, el) {
       strokeColor = color;
       document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
       el.classList.add('active');
-      if (mode === 'eraser') setMode('pen');
     }
 
-    function setBrushSize(size) { brushSize = size; }
+    function setBrushSize(size) {
+      baseBrushSize = parseFloat(size);
+      document.getElementById('brushSizeVal').innerText = size + ' px';
+    }
 
+    /* ---------------- 可拖曳貼圖與手寫文字 ---------------- */
     function makeDraggable(el) {
       let isDragging = false;
       let offsetX, offsetY;
@@ -584,29 +839,51 @@
         });
       });
       store[currentTab].elements = elementsData;
-      saveToLocalStorage();
+      savePermanentState();
     }
 
     function addSticker(sticker) {
-      createDraggableElement(`<span style="font-size:1.8rem;">${sticker}</span>`, '40%', '30%');
+      createDraggableElement(`<span style="font-size:1.8rem;">${sticker}</span>`, '40%', '35%');
+      showToast('已加入貼圖，可自由拖曳調整位置');
     }
 
     function addWishText() {
       const textInput = document.getElementById('wishText');
       const text = textInput.value.trim();
       if (!text) return;
-      createDraggableElement(`<span style="color:${strokeColor}; font-weight:bold;">${text}</span>`, '30%', '40%');
+      createDraggableElement(
+        `<span style="color:${strokeColor}; font-weight:700; font-family: var(--font-handwriting); text-shadow: 0 0 2px rgba(255,255,255,0.8);">${text}</span>`, 
+        '30%', 
+        '40%'
+      );
       textInput.value = '';
+      showToast('已放入手寫祝福，可自由拖曳放置');
     }
 
+    /* ---------------- 高解析度匯出 ---------------- */
     function exportImage() {
+      showToast('正在準備高畫質結婚書約圖檔...');
+      
+      // 隱藏刪除按鈕
       document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'none');
-      html2canvas(document.getElementById('certificateNode'), { scale: 2, useCORS: true }).then(c => {
+      
+      html2canvas(document.getElementById('certificateNode'), { 
+        scale: 2.5, 
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null
+      }).then(c => {
         const link = document.createElement('a');
-        link.download = `結婚書約_款式${currentTab === 1 ? 'A' : 'B'}_親友簽名版.png`;
+        link.download = `結婚書約_款式${currentTab === 1 ? 'A' : 'B'}_親友祝福牆.png`;
         link.href = c.toDataURL('image/png');
         link.click();
+        
         document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = '');
+        showToast('匯出成功！已下載結婚書約檔');
+      }).catch(err => {
+        console.error(err);
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = '');
+        showToast('匯出時發生錯誤，請重繪後再試');
       });
     }
 
