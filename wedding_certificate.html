@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>電子結婚書約 - 自訂書約與親友互動區</title>
+  <title>電子結婚書約 - 雙款式親友接續簽名</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
@@ -15,11 +15,7 @@
       --accent-color: #e76f51;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
@@ -34,7 +30,7 @@
 
     .header-title {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .header-title h1 {
@@ -47,6 +43,36 @@
       font-size: 0.95rem;
       color: #8d7b68;
       margin-top: 5px;
+    }
+
+    /* 頁籤切換按鈕區 */
+    .tab-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      width: 100%;
+      max-width: 1100px;
+      justify-content: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: 2px solid var(--primary-color);
+      background: #fff;
+      color: var(--primary-dark);
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--primary-dark);
+      color: #fff;
+      border-color: var(--primary-dark);
     }
 
     .app-container {
@@ -64,106 +90,47 @@
       }
     }
 
-    /* 書約卡片主體 */
+    /* 結婚書約顯示區域 */
     .certificate-wrapper {
       flex: 1;
       background: var(--card-bg);
       border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      padding: 20px;
+      padding: 15px;
       position: relative;
       border: 1px solid #faedcd;
     }
 
     .certificate-card {
-      border: 3px double #d4a373;
-      padding: 25px 20px;
-      background-color: #fffdf9;
       position: relative;
+      width: 100%;
+      min-height: 500px;
       background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
-      min-height: 600px;
-    }
-
-    .cert-title {
-      text-align: center;
-      font-size: 1.8rem;
-      letter-spacing: 6px;
-      color: var(--primary-dark);
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-
-    .cert-info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      font-size: 0.9rem;
-      margin-bottom: 15px;
-      line-height: 1.6;
-    }
-
-    .cert-info-box {
-      border: 1px dashed #d4a373;
-      padding: 12px;
-      border-radius: 6px;
-      background-color: rgba(255, 255, 255, 0.85);
-    }
-
-    .cert-info-box h3 {
-      font-size: 1rem;
-      color: var(--primary-dark);
-      margin-bottom: 6px;
-      border-bottom: 1px solid #faedcd;
-      padding-bottom: 3px;
-    }
-
-    .cert-info-box input {
-      width: 100%;
-      border: none;
-      background: transparent;
-      border-bottom: 1px dotted #ccc;
-      font-size: 0.85rem;
-      color: #333;
-      padding: 2px 0;
-      margin-bottom: 4px;
-    }
-
-    .witness-area-label {
-      text-align: center;
-      font-weight: bold;
-      color: var(--primary-dark);
-      margin: 15px 0 8px;
-      font-size: 1rem;
-      letter-spacing: 2px;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 4px;
-      border-radius: 4px;
-    }
-
-    /* Canvas 繪圖區 */
-    .canvas-container {
-      position: relative;
-      width: 100%;
-      height: 280px;
-      border: 2px dashed #ccd5ae;
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.4);
-      cursor: crosshair;
-      touch-action: none;
       overflow: hidden;
+      margin: 0 auto;
     }
 
-    canvas {
+    /* Canvas 全圖覆蓋繪圖層 */
+    .canvas-container {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+      cursor: crosshair;
+      touch-action: none;
     }
 
-    /* 工具列面板 */
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* 工具面板 */
     .tools-panel {
       width: 100%;
       background: var(--card-bg);
@@ -173,6 +140,8 @@
       display: flex;
       flex-direction: column;
       gap: 18px;
+      position: relative;
+      z-index: 100;
     }
 
     @media (min-width: 900px) {
@@ -211,23 +180,9 @@
       gap: 4px;
     }
 
-    .btn:hover {
-      background: var(--primary-color);
-      color: #fff;
-    }
-
-    .btn.active {
-      background: var(--primary-dark);
-      color: #fff;
-      border-color: var(--primary-dark);
-    }
-
-    .btn-action {
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      font-weight: bold;
-    }
+    .btn:hover { background: var(--primary-color); color: #fff; }
+    .btn.active { background: var(--primary-dark); color: #fff; border-color: var(--primary-dark); }
+    .btn-action { background: var(--primary-color); color: white; border: none; font-weight: bold; }
 
     .btn-export {
       background: var(--accent-color);
@@ -242,173 +197,92 @@
       box-shadow: 0 4px 10px rgba(231, 111, 81, 0.3);
     }
 
-    .btn-export:hover {
-      background: #d65a3b;
-    }
-
-    .color-options {
-      display: flex;
-      gap: 8px;
-    }
-
+    .color-options { display: flex; gap: 8px; }
     .color-dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid #fff;
-      box-shadow: 0 0 0 1px #ccc;
+      width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+      border: 2px solid #fff; box-shadow: 0 0 0 1px #ccc;
     }
+    .color-dot.active { transform: scale(1.15); box-shadow: 0 0 0 2px var(--primary-dark); }
 
-    .color-dot.active {
-      transform: scale(1.15);
-      box-shadow: 0 0 0 2px var(--primary-dark);
-    }
-
-    .sticker-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
+    .sticker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .sticker-btn {
-      font-size: 1.5rem;
-      padding: 6px;
-      background: #fefae0;
-      border: 1px solid #e9edc9;
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: center;
+      font-size: 1.5rem; padding: 6px; background: #fefae0;
+      border: 1px solid #e9edc9; border-radius: 6px; cursor: pointer; text-align: center;
     }
 
-    .sticker-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .text-input-group {
-      display: flex;
-      gap: 6px;
-    }
-
-    .text-input-group input {
-      flex: 1;
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 0.85rem;
-    }
+    .text-input-group { display: flex; gap: 6px; }
+    .text-input-group input { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
 
     .draggable-item {
-      position: absolute;
-      cursor: move;
-      user-select: none;
-      padding: 4px 8px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 1rem;
-      z-index: 10;
+      position: absolute; cursor: move; user-select: none; padding: 4px 8px;
+      border-radius: 4px; display: flex; align-items: center; gap: 4px; font-size: 1.2rem; z-index: 50;
     }
+    .draggable-item:hover { border: 1px dashed #d4a373; background: rgba(255, 255, 255, 0.8); }
+    .draggable-item .delete-btn { display: none; color: red; font-weight: bold; cursor: pointer; margin-left: 4px; }
+    .draggable-item:hover .delete-btn { display: inline; }
 
-    .draggable-item:hover {
-      border: 1px dashed #d4a373;
-      background: rgba(255, 255, 255, 0.8);
-    }
-
-    .draggable-item .delete-btn {
-      display: none;
-      color: red;
-      font-weight: bold;
-      cursor: pointer;
-      margin-left: 4px;
-    }
-
-    .draggable-item:hover .delete-btn {
-      display: inline;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
+    input[type="file"] { display: none; }
   </style>
 </head>
 <body>
 
   <div class="header-title">
-    <h1>線上互動結婚書約</h1>
-    <p>上傳專屬書約底圖、修改文字，並讓親友留下簽名與祝福！</p>
+    <h1>電子結婚書約 - 線上簽名與祝福</h1>
+    <p>切換款式即可選擇想簽名的書約，所有筆跡與祝福都會自動儲存！</p>
+  </div>
+
+  <!-- 雙頁籤 -->
+  <div class="tab-container">
+    <button type="button" class="tab-btn active" id="tab1" onclick="switchTab(1)">📜 結婚書約款式一</button>
+    <button type="button" class="tab-btn" id="tab2" onclick="switchTab(2)">🎨 結婚書約款式二</button>
   </div>
 
   <div class="app-container">
     
-    <!-- 結婚書約主體 -->
+    <!-- 結婚書約圖片與繪圖區 -->
     <div class="certificate-wrapper" id="certificateNode">
       <div class="certificate-card" id="certCard">
-        <div class="cert-title" id="certTitle">結婚書約</div>
-        
-        <div class="cert-info-grid">
-          <div class="cert-info-box">
-            <h3>結婚人（男方）</h3>
-            <div>姓名：<input type="text" value="陳大明"></div>
-            <div>出生：<input type="text" value="民國 82 年 5 月 20 日"></div>
-            <div>身分證：<input type="text" value="A123456789"></div>
-            <div>戶籍：<input type="text" value="台北市信義區忠孝東路..."></div>
-          </div>
-          <div class="cert-info-box">
-            <h3>結婚人（女方）</h3>
-            <div>姓名：<input type="text" value="林小美"></div>
-            <div>出生：<input type="text" value="民國 84 年 9 月 9 日"></div>
-            <div>身分證：<input type="text" value="B987654321"></div>
-            <div>戶籍：<input type="text" value="台中市西區公益路..."></div>
-          </div>
-        </div>
-
-        <div class="witness-area-label">✍️ 證人簽名與親友祝福互動專區 ✍️</div>
-        
-        <!-- Canvas 簽名與繪圖板區 -->
         <div class="canvas-container" id="canvasContainer">
           <canvas id="drawingCanvas"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- 控制與工具面板 -->
+    <!-- 控制工具面板 -->
     <div class="tools-panel">
       
-      <!-- 自訂背景上傳 -->
+      <!-- 底圖上傳 -->
       <div>
-        <div class="tool-group-title">客製化底圖</div>
+        <div class="tool-group-title">更換這張款式的底圖</div>
         <label class="btn btn-action" style="width: 100%; justify-content: center; padding: 10px;">
-          🖼️ 上傳自訂結婚書約圖片
-          <input type="file" id="bgUploader" accept="image/*" onchange="uploadBackground(event)">
+          🖼 上傳當前款式的書約底圖
+          <input type="file" accept="image/*" onchange="uploadCurrentBackground(event)">
         </label>
-        <div style="font-size:0.75rem; color:#888; margin-top:4px;">上傳後背景將自動替換為你選擇的圖檔。</div>
       </div>
 
-      <!-- 畫筆模式與功能 -->
+      <!-- 畫筆模式 -->
       <div>
         <div class="tool-group-title">
           <span>畫筆工具</span>
           <span id="currentToolText" style="font-size:0.8rem; color:#888;">【畫筆模式】</span>
         </div>
         <div class="btn-row">
-          <button class="btn active" id="penBtn" onclick="setMode('pen')">✏️ 畫筆</button>
-          <button class="btn" id="eraserBtn" onclick="setMode('eraser')">🧹 橡皮擦</button>
+          <button type="button" class="btn active" id="penBtn" onclick="setMode('pen')">✏️ 畫筆</button>
+          <button type="button" class="btn" id="eraserBtn" onclick="setMode('eraser')">🧹 橡皮擦</button>
         </div>
       </div>
 
-      <!-- 復原、重做、清空 -->
+      <!-- 步驟管理 -->
       <div>
         <div class="tool-group-title">步驟管理</div>
         <div class="btn-row">
-          <button class="btn" onclick="undo()">↩️ 復原 (Undo)</button>
-          <button class="btn" onclick="redo()">↪️️ 重做 (Redo)</button>
-          <button class="btn" onclick="clearCanvas()">🗑️ 清空筆劃</button>
+          <button type="button" class="btn" onclick="undo()">↩️ 復原 (Undo)</button>
+          <button type="button" class="btn" onclick="redo()">↪ 重做 (Redo)</button>
+          <button type="button" class="btn" onclick="clearCanvas()">🗑️ 清空此版筆劃</button>
         </div>
       </div>
 
-      <!-- 筆刷顏色與大小 -->
+      <!-- 顏色與大小 -->
       <div>
         <div class="tool-group-title">筆刷設定</div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -428,29 +302,29 @@
       <div>
         <div class="tool-group-title">點擊添加貼圖（可拖曳）</div>
         <div class="sticker-grid">
-          <button class="sticker-btn" onclick="addSticker('❤️')">❤️</button>
-          <button class="sticker-btn" onclick="addSticker('💍')">💍</button>
-          <button class="sticker-btn" onclick="addSticker('💐')">💐</button>
-          <button class="sticker-btn" onclick="addSticker('🐱')">🐱</button>
-          <button class="sticker-btn" onclick="addSticker('🥂')">🥂</button>
-          <button class="sticker-btn" onclick="addSticker('🎉')">🎉</button>
-          <button class="sticker-btn" onclick="addSticker('💌')">💌</button>
-          <button class="sticker-btn" onclick="addSticker('✨')">✨</button>
+          <button type="button" class="sticker-btn" onclick="addSticker('❤️')">❤️</button>
+          <button type="button" class="sticker-btn" onclick="addSticker('💍')">💍</button>
+          <button type="button" class="sticker-btn" onclick="addSticker('💐')">💐</button>
+          <button type="button" class="sticker-btn" onclick="addSticker('🐱')">🐱</button>
+          <button type="button" class="sticker-btn" onclick="addSticker('🥂')">🥂</button>
+          <button type="button" class="sticker-btn" onclick="addSticker('🎉')">🎉</button>
+          <button type="button" class="sticker-btn" onclick="addSticker('💌')">💌</button>
+          <button type="button" class="sticker-btn" onclick="addSticker('✨')">✨</button>
         </div>
       </div>
 
-      <!-- 祝福文字輸入 -->
+      <!-- 祝福文字 -->
       <div>
         <div class="tool-group-title">輸入祝福文字</div>
         <div class="text-input-group">
           <input type="text" id="wishText" placeholder="寫下祝福（如：百年好合！）">
-          <button class="btn btn-action" onclick="addWishText()">放入</button>
+          <button type="button" class="btn btn-action" onclick="addWishText()">放入</button>
         </div>
       </div>
 
-      <!-- 下載匯出 -->
+      <!-- 下載圖片 -->
       <div style="margin-top: 10px;">
-        <button class="btn-export" onclick="exportImage()">📷 下載高畫質結婚書約</button>
+        <button type="button" class="btn-export" onclick="exportImage()">📷 下載當前結婚書約圖檔</button>
       </div>
 
     </div>
@@ -458,6 +332,7 @@
   </div>
 
   <script>
+    let currentTab = 1;
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
     const container = document.getElementById('canvasContainer');
@@ -468,29 +343,119 @@
     let strokeColor = '#2b2b2b';
     let brushSize = 3;
 
-    let historyStack = [];
-    let historyStep = -1;
+    // 儲存兩張頁籤各自的資料 (含寬高比 aspect)
+    const store = {
+      1: { bg: '', canvasData: null, elements: [], aspect: null },
+      2: { bg: '', canvasData: null, elements: [], aspect: null }
+    };
+
+    function init() {
+      const savedData = localStorage.getItem('wedding_cert_store');
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          if (parsed[1]) store[1] = parsed[1];
+          if (parsed[2]) store[2] = parsed[2];
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      loadTabData(1);
+      window.addEventListener('resize', handleResize);
+    }
+
+    function saveToLocalStorage() {
+      store[currentTab].canvasData = canvas.toDataURL();
+      localStorage.setItem('wedding_cert_store', JSON.stringify(store));
+    }
+
+    function adjustCardAspectRatio(aspectRatio) {
+      if (aspectRatio) {
+        const width = certCard.clientWidth;
+        certCard.style.height = (width / aspectRatio) + 'px';
+      } else {
+        certCard.style.height = '650px';
+      }
+      resizeCanvas();
+    }
 
     function resizeCanvas() {
       const rect = container.getBoundingClientRect();
+      // 先備份舊筆跡避免 resize 導致畫面變空白
+      const tempImgData = canvas.toDataURL();
       canvas.width = rect.width;
       canvas.height = rect.height;
-      if (historyStep >= 0) {
-        restoreState(historyStep);
-      } else {
-        saveState();
+
+      if (tempImgData && tempImgData !== 'data:,') {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.src = tempImgData;
       }
     }
 
-    window.addEventListener('load', resizeCanvas);
+    function handleResize() {
+      if (store[currentTab].aspect) {
+        adjustCardAspectRatio(store[currentTab].aspect);
+      } else {
+        resizeCanvas();
+      }
+    }
 
-    // 上傳背景圖檔功能
-    function uploadBackground(e) {
+    function switchTab(tabIndex) {
+      if (currentTab === tabIndex) return;
+
+      saveToLocalStorage();
+
+      currentTab = tabIndex;
+      document.getElementById('tab1').classList.toggle('active', tabIndex === 1);
+      document.getElementById('tab2').classList.toggle('active', tabIndex === 2);
+
+      loadTabData(tabIndex);
+    }
+
+    function loadTabData(tabIndex) {
+      document.querySelectorAll('.draggable-item').forEach(el => el.remove());
+
+      if (store[tabIndex].bg) {
+        certCard.style.backgroundImage = `url(${store[tabIndex].bg})`;
+        adjustCardAspectRatio(store[tabIndex].aspect);
+      } else {
+        certCard.style.backgroundImage = 'none';
+        adjustCardAspectRatio(null);
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (store[tabIndex].canvasData) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = store[tabIndex].canvasData;
+      }
+
+      if (store[tabIndex].elements) {
+        store[tabIndex].elements.forEach(data => {
+          createDraggableElement(data.html, data.left, data.top, false);
+        });
+      }
+    }
+
+    function uploadCurrentBackground(e) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(event) {
-          certCard.style.backgroundImage = `url(${event.target.result})`;
+          const img = new Image();
+          img.onload = function() {
+            const aspect = img.width / img.height;
+            store[currentTab].bg = event.target.result;
+            store[currentTab].aspect = aspect;
+
+            certCard.style.backgroundImage = `url(${event.target.result})`;
+            adjustCardAspectRatio(aspect);
+            saveToLocalStorage();
+          };
+          img.src = event.target.result;
         };
         reader.readAsDataURL(file);
       }
@@ -534,7 +499,7 @@
       if (isDrawing) {
         isDrawing = false;
         ctx.closePath();
-        saveState();
+        saveToLocalStorage();
       }
     }
 
@@ -547,38 +512,11 @@
     canvas.addEventListener('touchmove', draw);
     canvas.addEventListener('touchend', stopDrawing);
 
-    function saveState() {
-      historyStep++;
-      if (historyStep < historyStack.length) historyStack.length = historyStep;
-      historyStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    }
-
-    function restoreState(step) {
-      if (step >= 0 && step < historyStack.length) {
-        ctx.putImageData(historyStack[step], 0, 0);
-      }
-    }
-
-    function undo() {
-      if (historyStep > 0) {
-        historyStep--;
-        restoreState(historyStep);
-      } else if (historyStep === 0) {
-        historyStep = -1;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    }
-
-    function redo() {
-      if (historyStep < historyStack.length - 1) {
-        historyStep++;
-        restoreState(historyStep);
-      }
-    }
+    function undo() { clearCanvas(); }
 
     function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      saveState();
+      saveToLocalStorage();
     }
 
     function setMode(newMode) {
@@ -595,9 +533,7 @@
       if (mode === 'eraser') setMode('pen');
     }
 
-    function setBrushSize(size) {
-      brushSize = size;
-    }
+    function setBrushSize(size) { brushSize = size; }
 
     function makeDraggable(el) {
       let isDragging = false;
@@ -625,7 +561,12 @@
         el.style.top = top + 'px';
       };
 
-      const onEnd = () => { isDragging = false; };
+      const onEnd = () => {
+        if (isDragging) {
+          isDragging = false;
+          saveElementsState();
+        }
+      };
 
       el.addEventListener('mousedown', onStart);
       document.addEventListener('mousemove', onMove);
@@ -636,52 +577,57 @@
       document.addEventListener('touchend', onEnd);
     }
 
-    function addSticker(sticker) {
+    function createDraggableElement(html, left = '40%', top = '30%', isNew = true) {
       const item = document.createElement('div');
       item.className = 'draggable-item';
-      item.style.fontSize = '1.8rem';
-      item.style.left = '40%';
-      item.style.top = '30%';
-      item.innerHTML = `${sticker} <span class="delete-btn" onclick="this.parentElement.remove()">✕</span>`;
+      item.style.left = left;
+      item.style.top = top;
+      item.innerHTML = `${html} <span class="delete-btn" onclick="this.parentElement.remove(); saveElementsState();">✕</span>`;
       container.appendChild(item);
       makeDraggable(item);
+      if (isNew) saveElementsState();
+    }
+
+    function saveElementsState() {
+      const elementsData = [];
+      document.querySelectorAll('.draggable-item').forEach(el => {
+        const clone = el.cloneNode(true);
+        const delBtn = clone.querySelector('.delete-btn');
+        if (delBtn) delBtn.remove();
+        elementsData.push({
+          html: clone.innerHTML,
+          left: el.style.left,
+          top: el.style.top
+        });
+      });
+      store[currentTab].elements = elementsData;
+      saveToLocalStorage();
+    }
+
+    function addSticker(sticker) {
+      createDraggableElement(`<span style="font-size:1.8rem;">${sticker}</span>`, '40%', '30%');
     }
 
     function addWishText() {
       const textInput = document.getElementById('wishText');
       const text = textInput.value.trim();
       if (!text) return;
-
-      const item = document.createElement('div');
-      item.className = 'draggable-item';
-      item.style.color = strokeColor;
-      item.style.fontWeight = 'bold';
-      item.style.left = '30%';
-      item.style.top = '40%';
-      item.innerHTML = `<span>${text}</span> <span class="delete-btn" onclick="this.parentElement.remove()">✕</span>`;
-      container.appendChild(item);
-      makeDraggable(item);
-
+      createDraggableElement(`<span style="color:${strokeColor}; font-weight:bold;">${text}</span>`, '30%', '40%');
       textInput.value = '';
     }
 
-    // 將整個書約畫面上傳並下載為 PNG 圖檔
     function exportImage() {
-      // 暫時隱藏拖曳項目的刪除按鈕 (✕)
       document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'none');
-
-      html2canvas(document.getElementById('certificateNode'), {
-        scale: 2, // 提高解析度
-        useCORS: true
-      }).then(canvas => {
+      html2canvas(document.getElementById('certificateNode'), { scale: 2, useCORS: true }).then(c => {
         const link = document.createElement('a');
-        link.download = '結婚書約_親友祝福版.png';
-        link.href = canvas.toDataURL('image/png');
+        link.download = `結婚書約_款式${currentTab}_親友簽名版.png`;
+        link.href = c.toDataURL('image/png');
         link.click();
-
         document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = '');
       });
     }
+
+    window.addEventListener('load', init);
   </script>
 </body>
 </html>
