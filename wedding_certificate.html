@@ -395,7 +395,7 @@
       <!-- 簽名復原與步驟管理 -->
       <div class="tool-section">
         <div class="btn-row">
-          <button type="button" class="btn" onclick="undoMyStroke()">↩️️ 復原我剛剛的筆劃</button>
+          <button type="button" class="btn" onclick="undoMyStroke()">↩ 復原我剛剛的筆劃</button>
           <button type="button" class="btn" onclick="clearMySessionStrokes()">🗑️ 清除我本次簽劃</button>
         </div>
       </div>
@@ -457,9 +457,12 @@
     let lastVelocity = 0;
     let lastWidth = baseBrushSize;
 
+    // 快照快取物件（加速繪圖）
+    const imageCache = {};
+
     // 歷史資料存儲機制
-    // permanentCanvasData: 累積之固定筆劃歷史（無法被擦除）
-    // sessionStrokes: 本次開啟連線所新增的筆畫陣列（僅允許復原或清空自己的）
+    // permanentImage: 累積之固定筆劃歷史（無法被擦除）
+    // sessionStrokes: 本次開啟連線所新增的筆劃陣列（僅允許復原或清空自己的）
     const store = {
       1: { bg: defaultImages[1], permanentImage: null, sessionStrokes: [], elements: [], aspect: null },
       2: { bg: defaultImages[2], permanentImage: null, sessionStrokes: [], elements: [], aspect: null }
@@ -484,7 +487,6 @@
         }
       }
 
-      // 預先載入兩張圖片以計算原圖比例
       preloadImage(1);
       preloadImage(2);
 
@@ -541,8 +543,8 @@
     function switchTab(tabIndex) {
       if (currentTab === tabIndex) return;
 
-      // 切換前將 session 筆劃合併存儲
-      savePermanentState();
+      // 切換前將 session 筆劃合併存儲至永久層
+      commitSessionToPermanent();
 
       currentTab = tabIndex;
       document.getElementById('tab1').classList.toggle('active', tabIndex === 1);
@@ -552,7 +554,6 @@
     }
 
     function loadTabData(tabIndex) {
-      // 清理可拖曳貼圖/文字 DOM
       document.querySelectorAll('.draggable-item').forEach(el => el.remove());
 
       certCard.style.backgroundImage = `url("${store[tabIndex].bg}")`;
@@ -560,7 +561,6 @@
 
       redrawCurrentCanvas();
 
-      // 重建文字與貼圖
       if (store[tabIndex].elements) {
         store[tabIndex].elements.forEach(data => {
           createDraggableElement(data.html, data.left, data.top, false);
@@ -573,16 +573,22 @@
 
       const tabData = store[currentTab];
 
-      // 1. 繪製永久歷史紀錄層
+      // 1. 繪製永久歷史紀錄層 (前人的筆畫)
       if (tabData.permanentImage) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          // 2. 繪製本次 Session 新增筆劃
+        if (imageCache[tabData.permanentImage]) {
+          ctx.drawImage(imageCache[tabData.permanentImage], 0, 0, canvas.width, canvas.height);
           renderSessionStrokes();
-        };
-        img.src = tabData.permanentImage;
+        } else {
+          const img = new Image();
+          img.onload = () => {
+            imageCache[tabData.permanentImage] = img;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            renderSessionStrokes();
+          };
+          img.src = tabData.permanentImage;
+        }
       } else {
+        // 2. 僅繪製本次 Session 新增筆劃
         renderSessionStrokes();
       }
     }
@@ -590,7 +596,7 @@
     function renderSessionStrokes() {
       const strokes = store[currentTab].sessionStrokes;
       strokes.forEach(stroke => {
-        if (stroke.points.length < 2) return;
+        if (!stroke.points || stroke.points.length < 2) return;
         drawStrokeCalligraphy(stroke.points, stroke.color, stroke.baseSize);
       });
     }
@@ -650,13 +656,12 @@
       isDrawing = false;
 
       if (currentStrokePoints.length > 1) {
-        // 保存筆畫點陣列
+        // 保存筆畫點陣列至當前 session 隊列
         store[currentTab].sessionStrokes.push({
           points: [...currentStrokePoints],
           color: strokeColor,
           baseSize: baseBrushSize
         });
-        savePermanentState();
       }
       currentStrokePoints = [];
     }
@@ -675,7 +680,7 @@
       ctx.stroke();
     }
 
-    // 完整繪製流暢鋼筆筆劃（用於重繪）
+    // 完整繪製流暢鋼筆筆劃（用於重繪當前 session 筆跡）
     function drawStrokeCalligraphy(points, color, baseSize) {
       if (points.length < 2) return;
 
@@ -727,7 +732,6 @@
       if (strokes.length > 0) {
         strokes.pop();
         redrawCurrentCanvas();
-        savePermanentState();
         showToast('已復原您剛剛的上一筆劃');
       } else {
         showToast('您本次連線尚無新增筆劃');
@@ -738,15 +742,23 @@
       if (store[currentTab].sessionStrokes.length > 0) {
         store[currentTab].sessionStrokes = [];
         redrawCurrentCanvas();
-        savePermanentState();
         showToast('已清除您本次連線的所有筆劃');
       } else {
         showToast('您本次連線尚無新增筆劃');
       }
     }
 
-    function savePermanentState() {
-      store[currentTab].permanentImage = canvas.toDataURL();
+    // 將 session 筆劃合併存儲至永久層
+    function commitSessionToPermanent() {
+      if (store[currentTab].sessionStrokes.length > 0) {
+        redrawCurrentCanvas();
+        store[currentTab].permanentImage = canvas.toDataURL();
+        store[currentTab].sessionStrokes = [];
+      }
+      saveStorageState();
+    }
+
+    function saveStorageState() {
       localStorage.setItem('wedding_cert_wall_v2', JSON.stringify({
         1: { permanentImage: store[1].permanentImage, elements: store[1].elements },
         2: { permanentImage: store[2].permanentImage, elements: store[2].elements }
@@ -832,7 +844,7 @@
         });
       });
       store[currentTab].elements = elementsData;
-      savePermanentState();
+      commitSessionToPermanent();
     }
 
     function addSticker(sticker) {
@@ -856,8 +868,8 @@
     /* ---------------- 高解析度匯出 ---------------- */
     function exportImage() {
       showToast('正在準備高畫質結婚書約圖檔...');
+      commitSessionToPermanent();
       
-      // 隱藏刪除按鈕
       document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'none');
       
       html2canvas(document.getElementById('certificateNode'), { 
