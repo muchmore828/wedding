@@ -366,7 +366,7 @@
       <!-- 鋼筆筆刷設定 -->
       <div class="tool-section">
         <div class="tool-group-title">
-          <span>✒️ 鋼筆手寫筆刷</span>
+          <span>筆刷</span>
           <span style="font-size:0.8rem; color:#a0784a; font-weight:normal;">流暢速度感</span>
         </div>
         
@@ -392,24 +392,17 @@
         </div>
       </div>
 
-      <!-- 安全簽名保護與步驟管理 -->
+      <!-- 簽名復原與步驟管理 -->
       <div class="tool-section">
-        <div class="tool-group-title">
-          <span>防誤刪簽名管理</span>
-          <span class="badge-protected">🔒 前人簽名保護中</span>
-        </div>
         <div class="btn-row">
-          <button type="button" class="btn" onclick="undoMyStroke()">↩️ 復原我剛剛的筆劃</button>
+          <button type="button" class="btn" onclick="undoMyStroke()">↩️️ 復原我剛剛的筆劃</button>
           <button type="button" class="btn" onclick="clearMySessionStrokes()">🗑️ 清除我本次簽劃</button>
         </div>
-        <p style="font-size: 0.75rem; color: #8d7b68; margin-top: 6px; line-height: 1.3;">
-          ※ 防護機制：親友無法擦除或清空其他人先前的簽名與筆跡。
-        </p>
       </div>
 
-      <!-- 手寫氣質圓潤文字祝福 -->
+      <!-- 手寫祝福文字 -->
       <div class="tool-section">
-        <div class="tool-group-title">手寫圓潤祝福文字</div>
+        <div class="tool-group-title">祝福文字</div>
         <div class="text-input-group">
           <input type="text" id="wishText" placeholder="輸入祝福（例：百年好合 永結同心）" onkeypress="if(event.key === 'Enter') addWishText()">
           <button type="button" class="btn btn-action" onclick="addWishText()">放入</button>
