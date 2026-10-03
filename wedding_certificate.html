@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>電子結婚書約 - 線上簽名與祝福</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +30,7 @@
       flex-direction: column;
       align-items: center;
       padding: 20px 10px;
+      touch-action: manipulation;
     }
 
     .header-title {
@@ -104,6 +105,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      touch-action: none;
     }
 
     /* 工具面板 */
@@ -126,7 +128,7 @@
       }
     }
 
-    /* 右側頁籤切換按鈕區 */
+    /* 頁籤切換 */
     .tab-container {
       display: flex;
       gap: 8px;
@@ -257,6 +259,7 @@
       position: absolute; cursor: move; user-select: none; padding: 4px 8px;
       border-radius: 4px; display: flex; align-items: center; gap: 4px; font-size: 1.2rem; z-index: 50;
       font-family: "Zen Maru Gothic", sans-serif;
+      touch-action: none;
     }
     .draggable-item:hover { border: 1px dashed #d4a373; background: rgba(255, 255, 255, 0.8); }
     .draggable-item .delete-btn { display: none; color: red; font-weight: bold; cursor: pointer; margin-left: 4px; }
@@ -317,7 +320,7 @@
       <div>
         <div class="tool-group-title">
           <span>筆刷與工具</span>
-          <span id="currentToolText" style="font-size:0.8rem; color:#8d7b68;">【鋼筆筆刷】</span>
+          <span id="currentToolText" style="font-size:0.8rem; color:#8d7b68;">【極順超滑鋼筆】</span>
         </div>
         <div class="btn-row">
           <button type="button" class="btn active" id="penBtn" onclick="setMode('pen')">✒️ 畫筆</button>
@@ -465,7 +468,7 @@
       document.getElementById('eraserBtn').classList.toggle('active', mode === 'eraser');
       
       if (mode === 'pen') {
-        document.getElementById('currentToolText').innerText = '【鋼筆筆刷】';
+        document.getElementById('currentToolText').innerText = '【極順超滑鋼筆】';
         document.getElementById('eraserSizeContainer').style.display = 'none';
         document.getElementById('colorRow').style.display = 'flex';
       } else {
@@ -607,62 +610,73 @@
 
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
       return {
-        x: clientX - rect.left,
-        y: clientY - rect.top,
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
         time: Date.now()
       };
     }
 
+    // 🚀 新版 Pointer Event 繪圖邏輯（防斷筆插值）
     function startDrawing(e) {
+      if (e.button !== undefined && e.button !== 0) return;
       isDrawing = true;
+      canvas.setPointerCapture(e.pointerId);
       const pos = getPos(e);
       points = [pos, pos];
     }
 
     function draw(e) {
       if (!isDrawing) return;
-      e.preventDefault();
-      const pos = getPos(e);
-      points.push(pos);
+      
+      const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
 
-      const p1 = points[points.length - 2];
-      const p2 = points[points.length - 1];
+      for (let ev of events) {
+        const pos = getPos(ev);
+        points.push(pos);
 
-      ctx.beginPath();
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+        const len = points.length;
+        if (len < 2) continue;
 
-      if (mode === 'eraser' && isAdmin) {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.lineWidth = eraserSize;
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = strokeColor;
+        const p1 = points[len - 2];
+        const p2 = points[len - 1];
 
-        const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-        const time = (p2.time - p1.time) || 1;
-        const velocity = dist / time;
+        ctx.beginPath();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
 
-        let dynamicWidth = Math.max(baseBrushSize * 0.4, baseBrushSize * (1.1 - velocity * 0.12));
+        if (mode === 'eraser' && isAdmin) {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = eraserSize;
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = strokeColor;
 
-        const xc = (p1.x + p2.x) / 2;
-        const yc = (p1.y + p2.y) / 2;
+          const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+          const time = (p2.time - p1.time) || 1;
+          const velocity = dist / time;
 
-        ctx.lineWidth = dynamicWidth;
-        ctx.quadraticCurveTo(p1.x, p1.y, xc, yc);
-        ctx.stroke();
+          let dynamicWidth = Math.max(baseBrushSize * 0.45, baseBrushSize * (1.1 - velocity * 0.12));
+
+          const midX = (p1.x + p2.x) / 2;
+          const midY = (p1.y + p2.y) / 2;
+
+          ctx.lineWidth = dynamicWidth;
+          ctx.moveTo(p1.x, p1.y);
+          ctx.quadraticCurveTo(p1.x, p1.y, midX, midY);
+          ctx.stroke();
+        }
       }
     }
 
-    function stopDrawing() {
+    function stopDrawing(e) {
       if (isDrawing) {
         isDrawing = false;
+        try { canvas.releasePointerCapture(e.pointerId); } catch(err){}
+
         if (mode === 'pen' && points.length > 1) {
           sessionStrokes.push({
             color: strokeColor,
@@ -697,15 +711,15 @@
         const time = (p2.time - p1.time) || 1;
         const velocity = dist / time;
 
-        let dynamicWidth = Math.max(baseSize * 0.4, baseSize * (1.1 - velocity * 0.12));
+        let dynamicWidth = Math.max(baseSize * 0.45, baseSize * (1.1 - velocity * 0.12));
 
-        const xc = (p1.x + p2.x) / 2;
-        const yc = (p1.y + p2.y) / 2;
+        const midX = (p1.x + p2.x) / 2;
+        const midY = (p1.y + p2.y) / 2;
 
         ctx.beginPath();
         ctx.lineWidth = dynamicWidth;
         ctx.moveTo(p1.x, p1.y);
-        ctx.quadraticCurveTo(p1.x, p1.y, xc, yc);
+        ctx.quadraticCurveTo(p1.x, p1.y, midX, midY);
         ctx.stroke();
       }
     }
@@ -728,14 +742,11 @@
       }
     }
 
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchmove', draw);
-    canvas.addEventListener('touchend', stopDrawing);
+    // 綁定 Pointer Events
+    canvas.addEventListener('pointerdown', startDrawing);
+    canvas.addEventListener('pointermove', draw);
+    canvas.addEventListener('pointerup', stopDrawing);
+    canvas.addEventListener('pointercancel', stopDrawing);
 
     function setColor(color, el) {
       strokeColor = color;
@@ -784,8 +795,8 @@
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onEnd);
 
-      el.addEventListener('touchstart', onStart);
-      document.addEventListener('touchmove', onMove);
+      el.addEventListener('touchstart', onStart, { passive: false });
+      document.addEventListener('touchmove', onMove, { passive: false });
       document.addEventListener('touchend', onEnd);
     }
 
