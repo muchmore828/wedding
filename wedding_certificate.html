@@ -30,7 +30,7 @@
 
     .header-title {
       text-align: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
     .header-title h1 {
@@ -43,36 +43,6 @@
       font-size: 0.95rem;
       color: #8d7b68;
       margin-top: 5px;
-    }
-
-    /* 頁籤切換按鈕區 */
-    .tab-container {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-      width: 100%;
-      max-width: 1100px;
-      justify-content: center;
-      position: relative;
-      z-index: 100;
-    }
-
-    .tab-btn {
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: bold;
-      border: 2px solid var(--primary-color);
-      background: #fff;
-      color: var(--primary-dark);
-      border-radius: 8px 8px 0 0;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .tab-btn.active {
-      background: var(--primary-dark);
-      color: #fff;
-      border-color: var(--primary-dark);
     }
 
     .app-container {
@@ -130,7 +100,7 @@
       display: block;
     }
 
-    /* 工具面板 */
+    /* 工具面板 (包含頁籤) */
     .tools-panel {
       width: 100%;
       background: var(--card-bg);
@@ -146,8 +116,35 @@
 
     @media (min-width: 900px) {
       .tools-panel {
-        width: 320px;
+        width: 340px;
       }
+    }
+
+    /* 右側頁籤切換按鈕區 */
+    .tab-container {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border: 2px solid var(--primary-color);
+      background: #fff;
+      color: var(--primary-dark);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: var(--primary-dark);
+      color: #fff;
+      border-color: var(--primary-dark);
     }
 
     .tool-group-title {
@@ -220,21 +217,13 @@
     .draggable-item:hover { border: 1px dashed #d4a373; background: rgba(255, 255, 255, 0.8); }
     .draggable-item .delete-btn { display: none; color: red; font-weight: bold; cursor: pointer; margin-left: 4px; }
     .draggable-item:hover .delete-btn { display: inline; }
-
-    input[type="file"] { display: none; }
   </style>
 </head>
 <body>
 
   <div class="header-title">
     <h1>電子結婚書約 - 線上簽名與祝福</h1>
-    <p>切換款式即可選擇想簽名的書約，所有筆跡與祝福都會自動儲存！</p>
-  </div>
-
-  <!-- 雙頁籤 -->
-  <div class="tab-container">
-    <button type="button" class="tab-btn active" id="tab1" onclick="switchTab(1)">📜 結婚書約款式一</button>
-    <button type="button" class="tab-btn" id="tab2" onclick="switchTab(2)">🎨 結婚書約款式二</button>
+    <p>切換右側頁籤選擇款式，親友即可親筆簽名與留下祝福！</p>
   </div>
 
   <div class="app-container">
@@ -248,16 +237,16 @@
       </div>
     </div>
 
-    <!-- 控制工具面板 -->
+    <!-- 右側控制工具面板 (含頁籤) -->
     <div class="tools-panel">
       
-      <!-- 底圖上傳 -->
+      <!-- 右側頁籤切換 -->
       <div>
-        <div class="tool-group-title">更換這張款式的底圖</div>
-        <label class="btn btn-action" style="width: 100%; justify-content: center; padding: 10px;">
-          🖼 上傳當前款式的書約底圖
-          <input type="file" accept="image/*" onchange="uploadCurrentBackground(event)">
-        </label>
+        <div class="tool-group-title">選擇結婚書約款式</div>
+        <div class="tab-container">
+          <button type="button" class="tab-btn active" id="tab1" onclick="switchTab(1)">📜 書約款式 A</button>
+          <button type="button" class="tab-btn" id="tab2" onclick="switchTab(2)">🎨 書約款式 B</button>
+        </div>
       </div>
 
       <!-- 畫筆模式 -->
@@ -277,7 +266,6 @@
         <div class="tool-group-title">步驟管理</div>
         <div class="btn-row">
           <button type="button" class="btn" onclick="undo()">↩️ 復原 (Undo)</button>
-          <button type="button" class="btn" onclick="redo()">↪ 重做 (Redo)</button>
           <button type="button" class="btn" onclick="clearCanvas()">🗑️ 清空此版筆劃</button>
         </div>
       </div>
@@ -343,10 +331,16 @@
     let strokeColor = '#2b2b2b';
     let brushSize = 3;
 
-    // 儲存兩張頁籤各自的資料 (含寬高比 aspect)
+    // 寫死預設圖片網址
+    const defaultImages = {
+      1: "https://muchmore828.github.io/wedding/Style%20A-%20Family.png",
+      2: "https://muchmore828.github.io/wedding/Style%20B-%20Family.png"
+    };
+
+    // 儲存兩張頁籤各自的資料
     const store = {
-      1: { bg: '', canvasData: null, elements: [], aspect: null },
-      2: { bg: '', canvasData: null, elements: [], aspect: null }
+      1: { bg: defaultImages[1], canvasData: null, elements: [], aspect: null },
+      2: { bg: defaultImages[2], canvasData: null, elements: [], aspect: null }
     };
 
     function init() {
@@ -354,14 +348,30 @@
       if (savedData) {
         try {
           const parsed = JSON.parse(savedData);
-          if (parsed[1]) store[1] = parsed[1];
-          if (parsed[2]) store[2] = parsed[2];
+          if (parsed[1]) store[1] = { ...parsed[1], bg: defaultImages[1] };
+          if (parsed[2]) store[2] = { ...parsed[2], bg: defaultImages[2] };
         } catch (e) {
           console.error(e);
         }
       }
+
+      // 預先加載圖片以獲取正確長寬比例
+      preloadImage(1);
+      preloadImage(2);
+
       loadTabData(1);
       window.addEventListener('resize', handleResize);
+    }
+
+    function preloadImage(tabIndex) {
+      const img = new Image();
+      img.onload = function() {
+        store[tabIndex].aspect = img.width / img.height;
+        if (currentTab === tabIndex) {
+          adjustCardAspectRatio(store[tabIndex].aspect);
+        }
+      };
+      img.src = store[tabIndex].bg;
     }
 
     function saveToLocalStorage() {
@@ -381,7 +391,6 @@
 
     function resizeCanvas() {
       const rect = container.getBoundingClientRect();
-      // 先備份舊筆跡避免 resize 導致畫面變空白
       const tempImgData = canvas.toDataURL();
       canvas.width = rect.width;
       canvas.height = rect.height;
@@ -416,13 +425,8 @@
     function loadTabData(tabIndex) {
       document.querySelectorAll('.draggable-item').forEach(el => el.remove());
 
-      if (store[tabIndex].bg) {
-        certCard.style.backgroundImage = `url(${store[tabIndex].bg})`;
-        adjustCardAspectRatio(store[tabIndex].aspect);
-      } else {
-        certCard.style.backgroundImage = 'none';
-        adjustCardAspectRatio(null);
-      }
+      certCard.style.backgroundImage = `url("${store[tabIndex].bg}")`;
+      adjustCardAspectRatio(store[tabIndex].aspect);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (store[tabIndex].canvasData) {
@@ -437,27 +441,6 @@
         store[tabIndex].elements.forEach(data => {
           createDraggableElement(data.html, data.left, data.top, false);
         });
-      }
-    }
-
-    function uploadCurrentBackground(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          const img = new Image();
-          img.onload = function() {
-            const aspect = img.width / img.height;
-            store[currentTab].bg = event.target.result;
-            store[currentTab].aspect = aspect;
-
-            certCard.style.backgroundImage = `url(${event.target.result})`;
-            adjustCardAspectRatio(aspect);
-            saveToLocalStorage();
-          };
-          img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
       }
     }
 
@@ -620,7 +603,7 @@
       document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'none');
       html2canvas(document.getElementById('certificateNode'), { scale: 2, useCORS: true }).then(c => {
         const link = document.createElement('a');
-        link.download = `結婚書約_款式${currentTab}_親友簽名版.png`;
+        link.download = `結婚書約_款式${currentTab === 1 ? 'A' : 'B'}_親友簽名版.png`;
         link.href = c.toDataURL('image/png');
         link.click();
         document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = '');
