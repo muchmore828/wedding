@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>電子結婚書約 - 自訂書約與親友互動區</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #d4a373;
+      --primary-dark: #bc8a5f;
+      --bg-color: #fefae0;
+      --card-bg: #ffffff;
+      --text-color: #4a3f35;
+      --accent-color: #e76f51;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 10px;
+    }
+
+    .header-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header-title h1 {
+      font-size: 1.8rem;
+      color: var(--primary-dark);
+      letter-spacing: 2px;
+    }
+
+    .header-title p {
+      font-size: 0.95rem;
+      color: #8d7b68;
+      margin-top: 5px;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    @media (min-width: 900px) {
+      .app-container {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+
+    /* 書約卡片主體 */
+    .certificate-wrapper {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      position: relative;
+      border: 1px solid #faedcd;
+    }
+
+    .certificate-card {
+      border: 3px double #d4a373;
+      padding: 25px 20px;
+      background-color: #fffdf9;
+      position: relative;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 600px;
+    }
+
+    .cert-title {
+      text-align: center;
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      color: var(--primary-dark);
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .cert-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+
+    .cert-info-box {
+      border: 1px dashed #d4a373;
+      padding: 12px;
+      border-radius: 6px;
+      background-color: rgba(255, 255, 255, 0.85);
+    }
+
+    .cert-info-box h3 {
+      font-size: 1rem;
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+      border-bottom: 1px solid #faedcd;
+      padding-bottom: 3px;
+    }
+
+    .cert-info-box input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      border-bottom: 1px dotted #ccc;
+      font-size: 0.85rem;
+      color: #333;
+      padding: 2px 0;
+      margin-bottom: 4px;
+    }
+
+    .witness-area-label {
+      text-align: center;
+      font-weight: bold;
+      color: var(--primary-dark);
+      margin: 15px 0 8px;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    /* Canvas 繪圖區 */
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      border: 2px dashed #ccd5ae;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.4);
+      cursor: crosshair;
+      touch-action: none;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 工具列面板 */
+    .tools-panel {
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    @media (min-width: 900px) {
+      .tools-panel {
+        width: 320px;
+      }
+    }
+
+    .tool-group-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border: 1px solid var(--primary-color);
+      background: #fff;
+      color: var(--primary-dark);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn:hover {
+      background: var(--primary-color);
+      color: #fff;
+    }
+
+    .btn.active {
+      background: var(--primary-dark);
+      color: #fff;
+      border-color: var(--primary-dark);
+    }
+
+    .btn-action {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      font-weight: bold;
+    }
+
+    .btn-export {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      font-size: 1rem;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(231, 111, 81, 0.3);
+    }
+
+    .btn-export:hover {
+      background: #d65a3b;
+    }
+
+    .color-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .color-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px #ccc;
+    }
+
+    .color-dot.active {
+      transform: scale(1.15);
+      box-shadow: 0 0 0 2px var(--primary-dark);
+    }
+
+    .sticker-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .sticker-btn {
+      font-size: 1.5rem;
+      padding: 6px;
+      background: #fefae0;
+      border: 1px solid #e9edc9;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .sticker-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .text-input-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .text-input-group input {
+      flex: 1;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .draggable-item {
+      position: absolute;
+      cursor: move;
+      user-select: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 1rem;
+      z-index: 10;
+    }
+
+    .draggable-item:hover {
+      border: 1px dashed #d4a373;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .draggable-item .delete-btn {
+      display: none;
+      color: red;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    .draggable-item:hover .delete-btn {
+      display: inline;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-title">
+    <h1>線上互動結婚書約</h1>
+    <p>上傳專屬書約底圖、修改文字，並讓親友留下簽名與祝福！</p>
+  </div>
+
+  <div class="app-container">
+    
+    <!-- 結婚書約主體 -->
+    <div class="certificate-wrapper" id="certificateNode">
+      <div class="certificate-card" id="certCard">
+        <div class="cert-title" id="certTitle">結婚書約</div>
+        
+        <div class="cert-info-grid">
+          <div class="cert-info-box">
+            <h3>結婚人（男方）</h3>
+            <div>姓名：<input type="text" value="陳大明"></div>
+            <div>出生：<input type="text" value="民國 82 年 5 月 20 日"></div>
+            <div>身分證：<input type="text" value="A123456789"></div>
+            <div>戶籍：<input type="text" value="台北市信義區忠孝東路..."></div>
+          </div>
+          <div class="cert-info-box">
+            <h3>結婚人（女方）</h3>
+            <div>姓名：<input type="text" value="林小美"></div>
+            <div>出生：<input type="text" value="民國 84 年 9 月 9 日"></div>
+            <div>身分證：<input type="text" value="B987654321"></div>
+            <div>戶籍：<input type="text" value="台中市西區公益路..."></div>
+          </div>
+        </div>
+
+        <div class="witness-area-label">✍️ 證人簽名與親友祝福互動專區 ✍️</div>
+        
+        <!-- Canvas 簽名與繪圖板區 -->
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="drawingCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 控制與工具面板 -->
+    <div class="tools-panel">
+      
+      <!-- 自訂背景上傳 -->
+      <div>
+        <div class="tool-group-title">客製化底圖</div>
+        <label class="btn btn-action" style="width: 100%; justify-content: center; padding: 10px;">
+          🖼️ 上傳自訂結婚書約圖片
+          <input type="file" id="bgUploader" accept="image/*" onchange="uploadBackground(event)">
+        </label>
+        <div style="font-size:0.75rem; color:#888; margin-top:4px;">上傳後背景將自動替換為你選擇的圖檔。</div>
+      </div>
+
+      <!-- 畫筆模式與功能 -->
+      <div>
+        <div class="tool-group-title">
+          <span>畫筆工具</span>
+          <span id="currentToolText" style="font-size:0.8rem; color:#888;">【畫筆模式】</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn active" id="penBtn" onclick="setMode('pen')">✏️ 畫筆</button>
+          <button class="btn" id="eraserBtn" onclick="setMode('eraser')">🧹 橡皮擦</button>
+        </div>
+      </div>
+
+      <!-- 復原、重做、清空 -->
+      <div>
+        <div class="tool-group-title">步驟管理</div>
+        <div class="btn-row">
+          <button class="btn" onclick="undo()">↩️ 復原 (Undo)</button>
+          <button class="btn" onclick="redo()">↪️️ 重做 (Redo)</button>
+          <button class="btn" onclick="clearCanvas()">🗑️ 清空筆劃</button>
+        </div>
+      </div>
+
+      <!-- 筆刷顏色與大小 -->
+      <div>
+        <div class="tool-group-title">筆刷設定</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="color-options">
+            <div class="color-dot active" style="background:#2b2b2b;" onclick="setColor('#2b2b2b', this)"></div>
+            <div class="color-dot" style="background:#e76f51;" onclick="setColor('#e76f51', this)"></div>
+            <div class="color-dot" style="background:#2a9d8f;" onclick="setColor('#2a9d8f', this)"></div>
+            <div class="color-dot" style="background:#457b9d;" onclick="setColor('#457b9d', this)"></div>
+          </div>
+          <div>
+            <input type="range" id="brushSize" min="2" max="20" value="3" onchange="setBrushSize(this.value)">
+          </div>
+        </div>
+      </div>
+
+      <!-- 可愛貼圖 -->
+      <div>
+        <div class="tool-group-title">點擊添加貼圖（可拖曳）</div>
+        <div class="sticker-grid">
+          <button class="sticker-btn" onclick="addSticker('❤️')">❤️</button>
+          <button class="sticker-btn" onclick="addSticker('💍')">💍</button>
+          <button class="sticker-btn" onclick="addSticker('💐')">💐</button>
+          <button class="sticker-btn" onclick="addSticker('🐱')">🐱</button>
+          <button class="sticker-btn" onclick="addSticker('🥂')">🥂</button>
+          <button class="sticker-btn" onclick="addSticker('🎉')">🎉</button>
+          <button class="sticker-btn" onclick="addSticker('💌')">💌</button>
+          <button class="sticker-btn" onclick="addSticker('✨')">✨</button>
+        </div>
+      </div>
+
+      <!-- 祝福文字輸入 -->
+      <div>
+        <div class="tool-group-title">輸入祝福文字</div>
+        <div class="text-input-group">
+          <input type="text" id="wishText" placeholder="寫下祝福（如：百年好合！）">
+          <button class="btn btn-action" onclick="addWishText()">放入</button>
+        </div>
+      </div>
+
+      <!-- 下載匯出 -->
+      <div style="margin-top: 10px;">
+        <button class="btn-export" onclick="exportImage()">📷 下載高畫質結婚書約</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('canvasContainer');
+    const certCard = document.getElementById('certCard');
+
+    let isDrawing = false;
+    let mode = 'pen';
+    let strokeColor = '#2b2b2b';
+    let brushSize = 3;
+
+    let historyStack = [];
+    let historyStep = -1;
+
+    function resizeCanvas() {
+      const rect = container.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      if (historyStep >= 0) {
+        restoreState(historyStep);
+      } else {
+        saveState();
+      }
+    }
+
+    window.addEventListener('load', resizeCanvas);
+
+    // 上傳背景圖檔功能
+    function uploadBackground(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          certCard.style.backgroundImage = `url(${event.target.result})`;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+
+      ctx.lineWidth = mode === 'eraser' ? brushSize * 4 : brushSize;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (mode === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = strokeColor;
+      }
+
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      if (isDrawing) {
+        isDrawing = false;
+        ctx.closePath();
+        saveState();
+      }
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDrawing);
+
+    function saveState() {
+      historyStep++;
+      if (historyStep < historyStack.length) historyStack.length = historyStep;
+      historyStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    }
+
+    function restoreState(step) {
+      if (step >= 0 && step < historyStack.length) {
+        ctx.putImageData(historyStack[step], 0, 0);
+      }
+    }
+
+    function undo() {
+      if (historyStep > 0) {
+        historyStep--;
+        restoreState(historyStep);
+      } else if (historyStep === 0) {
+        historyStep = -1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function redo() {
+      if (historyStep < historyStack.length - 1) {
+        historyStep++;
+        restoreState(historyStep);
+      }
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      saveState();
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      document.getElementById('penBtn').classList.toggle('active', mode === 'pen');
+      document.getElementById('eraserBtn').classList.toggle('active', mode === 'eraser');
+      document.getElementById('currentToolText').innerText = mode === 'pen' ? '【畫筆模式】' : '【橡皮擦模式】';
+    }
+
+    function setColor(color, el) {
+      strokeColor = color;
+      document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
+      el.classList.add('active');
+      if (mode === 'eraser') setMode('pen');
+    }
+
+    function setBrushSize(size) {
+      brushSize = size;
+    }
+
+    function makeDraggable(el) {
+      let isDragging = false;
+      let offsetX, offsetY;
+
+      const onStart = (e) => {
+        isDragging = true;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const rect = el.getBoundingClientRect();
+        offsetX = clientX - rect.left;
+        offsetY = clientY - rect.top;
+      };
+
+      const onMove = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const containerRect = container.getBoundingClientRect();
+
+        let left = clientX - containerRect.left - offsetX;
+        let top = clientY - containerRect.top - offsetY;
+
+        el.style.left = left + 'px';
+        el.style.top = top + 'px';
+      };
+
+      const onEnd = () => { isDragging = false; };
+
+      el.addEventListener('mousedown', onStart);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onEnd);
+
+      el.addEventListener('touchstart', onStart);
+      document.addEventListener('touchmove', onMove);
+      document.addEventListener('touchend', onEnd);
+    }
+
+    function addSticker(sticker) {
+      const item = document.createElement('div');
+      item.className = 'draggable-item';
+      item.style.fontSize = '1.8rem';
+      item.style.left = '40%';
+      item.style.top = '30%';
+      item.innerHTML = `${sticker} <span class="delete-btn" onclick="this.parentElement.remove()">✕</span>`;
+      container.appendChild(item);
+      makeDraggable(item);
+    }
+
+    function addWishText() {
+      const textInput = document.getElementById('wishText');
+      const text = textInput.value.trim();
+      if (!text) return;
+
+      const item = document.createElement('div');
+      item.className = 'draggable-item';
+      item.style.color = strokeColor;
+      item.style.fontWeight = 'bold';
+      item.style.left = '30%';
+      item.style.top = '40%';
+      item.innerHTML = `<span>${text}</span> <span class="delete-btn" onclick="this.parentElement.remove()">✕</span>`;
+      container.appendChild(item);
+      makeDraggable(item);
+
+      textInput.value = '';
+    }
+
+    // 將整個書約畫面上傳並下載為 PNG 圖檔
+    function exportImage() {
+      // 暫時隱藏拖曳項目的刪除按鈕 (✕)
+      document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'none');
+
+      html2canvas(document.getElementById('certificateNode'), {
+        scale: 2, // 提高解析度
+        useCORS: true
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = '結婚書約_親友祝福版.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = '');
+      });
+    }
+  </script>
+</body>
+</html>
