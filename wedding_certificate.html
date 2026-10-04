@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>電子結婚書約 - 線上簽名與祝福</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,41 +29,48 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 10px;
+      padding: 12px 8px;
       touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .header-title {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
+      padding: 0 10px;
     }
 
     .header-title h1 {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       color: var(--primary-dark);
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
       font-family: "Kiwi Maru", serif;
       font-weight: 500;
     }
 
     .header-title p {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       color: #8d7b68;
-      margin-top: 5px;
+      margin-top: 4px;
     }
 
     .app-container {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
       width: 100%;
       max-width: 1100px;
     }
 
+    /* 900px 以上（電腦與橫板平板）切換為雙欄 */
     @media (min-width: 900px) {
+      body { padding: 20px 15px; }
+      .header-title h1 { font-size: 1.8rem; }
+      .header-title p { font-size: 0.95rem; }
       .app-container {
         flex-direction: row;
         align-items: flex-start;
+        gap: 20px;
       }
     }
 
@@ -72,16 +79,16 @@
       flex: 1;
       background: var(--card-bg);
       border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      padding: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      padding: 10px;
       position: relative;
       border: 1px solid #faedcd;
+      width: 100%;
     }
 
     .certificate-card {
       position: relative;
       width: 100%;
-      min-height: 500px;
       background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
@@ -113,18 +120,19 @@
       width: 100%;
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       position: relative;
       z-index: 100;
     }
 
     @media (min-width: 900px) {
       .tools-panel {
-        width: 350px;
+        width: 360px;
+        padding: 20px;
       }
     }
 
@@ -138,7 +146,7 @@
     .tab-btn {
       flex: 1;
       padding: 10px 0;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: bold;
       border: 2px solid var(--primary-color);
       background: #fff;
@@ -157,7 +165,7 @@
     }
 
     .tool-group-title {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: bold;
       color: var(--primary-dark);
       margin-bottom: 8px;
@@ -183,12 +191,15 @@
       transition: all 0.2s;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 4px;
       font-family: inherit;
+      min-height: 38px;
     }
 
     .btn:hover { background: var(--primary-color); color: #fff; }
     .btn.active { background: var(--primary-dark); color: #fff; border-color: var(--primary-dark); }
+    
     .btn-action { 
       background: var(--accent-color); 
       color: white; 
@@ -199,6 +210,7 @@
       border-radius: 8px;
       font-size: 0.95rem;
       cursor: pointer;
+      min-height: 42px;
     }
     
     .btn-danger {
@@ -223,6 +235,7 @@
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(188, 138, 95, 0.3);
       font-family: inherit;
+      min-height: 46px;
     }
 
     .admin-box {
@@ -247,7 +260,7 @@
 
     .color-options { display: flex; gap: 8px; }
     .color-dot {
-      width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
       border: 2px solid #fff; box-shadow: 0 0 0 1px #ccc;
       transition: transform 0.2s;
     }
@@ -255,8 +268,9 @@
 
     .sticker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .sticker-btn {
-      font-size: 1.5rem; padding: 6px; background: #fefae0;
+      font-size: 1.4rem; padding: 8px 4px; background: #fefae0;
       border: 1px solid #e9edc9; border-radius: 6px; cursor: pointer; text-align: center;
+      min-height: 42px; display: flex; align-items: center; justify-content: center;
     }
 
     /* 打字小卡選擇器 */
@@ -268,7 +282,7 @@
 
     .card-theme-btn {
       flex: 1;
-      padding: 6px;
+      padding: 8px 4px;
       font-size: 0.75rem;
       border-radius: 6px;
       border: 1px solid #ddd;
@@ -312,10 +326,10 @@
 
     /* 簽名/祝福小卡樣式 */
     .blessing-card-badge {
-      padding: 10px 14px;
+      padding: 8px 12px;
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-      max-width: 200px;
+      max-width: 180px;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -325,14 +339,14 @@
 
     .blessing-card-badge .card-name {
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       border-bottom: 1px dashed rgba(0,0,0,0.15);
-      padding-bottom: 3px;
+      padding-bottom: 2px;
       color: #333;
     }
 
     .blessing-card-badge .card-text {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: #444;
       line-height: 1.3;
       word-break: break-all;
@@ -350,10 +364,10 @@
       right: -8px;
       background: var(--danger-color);
       color: white;
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      display: none; 
+      display: flex;
       align-items: center;
       justify-content: center;
       font-size: 12px;
@@ -361,8 +375,6 @@
       cursor: pointer; 
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    
-    .draggable-item:hover .delete-btn { display: flex; }
 
     .slider-container {
       display: flex;
@@ -426,7 +438,7 @@
             <button type="button" class="card-theme-btn" style="background:#e8f5e9;" onclick="selectCardTheme('green', this)">🌿 清新綠</button>
           </div>
           <input type="text" id="signerName" placeholder="您的名字 / 簽名 (例如: 小明)">
-          <textarea id="signerBlessing" rows="2" placeholder="給新人的祝福 (例如: 祝子晴與男友新婚快樂、永浴愛河！)"></textarea>
+          <textarea id="signerBlessing" rows="2" placeholder="給新人的祝福 (例如: 祝新婚快樂、永浴愛河！)"></textarea>
           <button type="button" class="btn-action" onclick="addBlessingCard()">✨ 生成祝福卡片（可拖曳）</button>
         </div>
       </div>
@@ -438,12 +450,12 @@
           <span id="currentToolText" style="font-size:0.8rem; color:#8d7b68;">【極順超滑原子筆】</span>
         </div>
         <div class="btn-row">
-          <button type="button" class="btn active" id="penBtn" onclick="setMode('pen')">✒️ 手寫畫筆</button>
-          <button type="button" class="btn btn-danger" id="eraserBtn" style="display: none;" onclick="setMode('eraser')">🧹 橡皮擦 (管理者)</button>
+          <button type="button" class="btn active" id="penBtn" style="flex: 1;" onclick="setMode('pen')">✒️ 手寫畫筆</button>
+          <button type="button" class="btn btn-danger" id="eraserBtn" style="display: none; flex: 1;" onclick="setMode('eraser')">🧹 橡皮擦 (管理者)</button>
         </div>
         <div class="btn-row" style="margin-top: 8px;">
-          <button type="button" class="btn" onclick="undoMyStroke()">↩️ 復原筆劃</button>
-          <button type="button" class="btn" onclick="clearMySessionStrokes()">🗑️ 清除手寫</button>
+          <button type="button" class="btn" style="flex: 1;" onclick="undoMyStroke()">↩️ 復原筆劃</button>
+          <button type="button" class="btn" style="flex: 1;" onclick="clearMySessionStrokes()">🗑️ 清除手寫</button>
         </div>
       </div>
 
@@ -543,6 +555,7 @@
 
       loadTabData(1);
       window.addEventListener('resize', handleResize);
+      window.addEventListener('orientationchange', () => setTimeout(handleResize, 300));
     }
 
     function toggleAdminMode(checked) {
@@ -638,7 +651,7 @@
         const width = certCard.clientWidth;
         certCard.style.height = (width / aspectRatio) + 'px';
       } else {
-        certCard.style.height = '650px';
+        certCard.style.height = '500px';
       }
       resizeCanvas();
     }
@@ -946,7 +959,7 @@
       document.addEventListener('touchend', onEnd);
     }
 
-    function createDraggableElement(html, left = '35%', top = '35%', isNew = true) {
+    function createDraggableElement(html, left = '30%', top = '30%', isNew = true) {
       const item = document.createElement('div');
       item.className = 'draggable-item';
       item.style.left = left;
@@ -992,14 +1005,14 @@
         </div>
       `;
 
-      createDraggableElement(cardHtml, '30%', '40%');
+      createDraggableElement(cardHtml, '25%', '35%');
 
       nameInput.value = '';
       blessingInput.value = '';
     }
 
     function addSticker(sticker) {
-      createDraggableElement(`<span style="font-size:1.8rem;">${sticker}</span>`, '40%', '30%');
+      createDraggableElement(`<span style="font-size:1.8rem;">${sticker}</span>`, '35%', '30%');
     }
 
     function exportImage() {
